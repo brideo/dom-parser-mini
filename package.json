@@ -1,6 +1,6 @@
 {
   "name": "dom-parser-mini",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A lightweight library for parsing HTML elements.",
   "main": "dist/parser.min.js",
   "types": "dist/parser.d.ts",

@@ -168,8 +168,6 @@ class HTMLNode implements HTMLNodeInterface {
   static create(input: string): HTMLNodeInterface[] {
     const tokens = HTMLNode.tokenize(input);
 
-    console.log(tokens);
-
     const nodes: HTMLNodeInterface[] = [];
     const stack: HTMLNode[] = [];
 
