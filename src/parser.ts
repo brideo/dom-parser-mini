@@ -11,7 +11,7 @@ interface Token {
   value: string;
 }
 
-interface HTMLNodeInterface {
+export interface HTMLNodeInterface {
   tagName: string;
   attributes: { [key: string]: string };
   children: HTMLNodeInterface[];
@@ -144,9 +144,6 @@ class HTMLNode implements HTMLNodeInterface {
 
   static create(input: string): HTMLNodeInterface[] {
     const tokens = HTMLNode.tokenize(input);
-
-    console.log(tokens);
-
     const nodes: HTMLNodeInterface[] = [];
     const stack: HTMLNode[] = [];
 
