@@ -1,5 +1,11 @@
 # dom-parser-mini
 
+[![NPM version](https://img.shields.io/npm/v/dom-parser-mini)](https://www.npmjs.com/package/dom-parser-mini)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/brideo/dom-parser-mini/ci.yml?branch=main)](https://github.com/brideo/dom-parser-mini/actions)
+[![Test Coverage](https://coveralls.io/repos/github/brideo/dom-parser-mini/badge.svg?branch=main)](https://coveralls.io/github/brideo/dom-parser-mini)
+[![License](https://img.shields.io/npm/l/dom-parser-mini)](https://github.com/brideo/dom-parser-mini/blob/main/LICENSE)
+[![Dependencies](https://img.shields.io/david/brideo/dom-parser-mini)](https://david-dm.org/brideo/dom-parser-mini)
+
 A lightweight, dependency-free HTML parser for Node.js. This package provides a simple way to parse and manipulate HTML
 content.
 
