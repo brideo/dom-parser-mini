@@ -4,6 +4,7 @@ enum TokenType {
   TAG_CLOSE,
   ATTRIBUTE_NAME,
   ATTRIBUTE_VALUE,
+  SELF_CLOSING_TAG,
 }
 
 interface Token {
@@ -11,19 +12,34 @@ interface Token {
   value: string;
 }
 
+const selfClosingTags = new Set([
+  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+  'link', 'meta', 'source', 'track', 'wbr'
+]);
+
 export interface HTMLNodeInterface {
   tagName: string;
   attributes: { [key: string]: string };
   children: HTMLNodeInterface[];
+  isSelfClosing: boolean;
   content?: string;
+
   html(): string;
+
   text(): string;
+
   getElementById(id: string): HTMLNodeInterface | null;
+
   getElementsByClass(className: string): HTMLNodeInterface[];
+
   hidden(): void;
+
   show(): void;
+
   remove(): void;
+
   unRemove(): void;
+
   filterAttributes(whitelist: string[]): void;
 }
 
@@ -33,6 +49,7 @@ class HTMLNode implements HTMLNodeInterface {
   children: HTMLNodeInterface[];
   content?: string;
   isRemoved: boolean;
+  isSelfClosing: boolean;
 
   constructor(tagName: string, attributes: { [key: string]: string }, children: HTMLNodeInterface[], content?: string) {
     this.tagName = tagName;
@@ -40,10 +57,11 @@ class HTMLNode implements HTMLNodeInterface {
     this.children = children;
     this.content = content;
     this.isRemoved = false;
+    this.isSelfClosing = false;
   }
 
   html(): string {
-    if (this.isRemoved)  {
+    if (this.isRemoved) {
       return '';
     }
 
@@ -51,6 +69,11 @@ class HTMLNode implements HTMLNodeInterface {
     for (const child of this.children) {
       innerHTML += child.html();
     }
+
+    if (this.isSelfClosing) {
+      return `<${this.tagName}${this.getAttributesString()} />`
+    }
+
     return `<${this.tagName}${this.getAttributesString()}>${innerHTML}</${this.tagName}>`;
   }
 
@@ -144,6 +167,9 @@ class HTMLNode implements HTMLNodeInterface {
 
   static create(input: string): HTMLNodeInterface[] {
     const tokens = HTMLNode.tokenize(input);
+
+    console.log(tokens);
+
     const nodes: HTMLNodeInterface[] = [];
     const stack: HTMLNode[] = [];
 
@@ -178,26 +204,31 @@ class HTMLNode implements HTMLNodeInterface {
           currentAttributes[lastKey] = token.value;
           break;
         case TokenType.TAG_CLOSE:
-          if (currentNode) {
-            if (Object.keys(currentNode.attributes).length === 0) {
-              currentNode.attributes = currentAttributes
-            }
-
-            if (!currentNode.content) {
-              currentNode.content = currentContent;
-            } else {
-              currentNode.content += ' '+ currentContent;
-            }
-
-            currentContent = '';
-            currentAttributes = {};
-            if (stack.length > 0) {
-              stack[stack.length - 1].children.push(currentNode);
-            } else {
-              nodes.push(currentNode);
-            }
-            currentNode = stack.pop() || null;
+        case TokenType.SELF_CLOSING_TAG:
+          if (!currentNode) {
+            break;
           }
+
+          currentNode.isSelfClosing = token.type === TokenType.SELF_CLOSING_TAG;
+
+          if (Object.keys(currentNode.attributes).length === 0) {
+            currentNode.attributes = currentAttributes
+          }
+
+          if (!currentNode.content) {
+            currentNode.content = currentContent;
+          } else {
+            currentNode.content += ' ' + currentContent;
+          }
+
+          currentContent = '';
+          currentAttributes = {};
+          if (stack.length > 0) {
+            stack[stack.length - 1].children.push(currentNode);
+          } else {
+            nodes.push(currentNode);
+          }
+          currentNode = stack.pop() || null;
           break;
         case TokenType.TEXT:
           if (currentNode) {
@@ -209,8 +240,6 @@ class HTMLNode implements HTMLNodeInterface {
 
     return nodes;
   }
-
-
 
   private static tokenize(input: string): Token[] {
     const tokens: Token[] = [];
@@ -226,6 +255,7 @@ class HTMLNode implements HTMLNodeInterface {
         } else {
           let j = i + 1;
           while (j < input.length && input[j] !== ' ' && input[j] !== '>' && input[j] !== '/') j++;
+          const tagName = input.slice(i + 1, j).trim();
           tokens.push({ type: TokenType.TAG_OPEN, value: input.slice(i + 1, j).trim() });
 
           while (j < input.length && input[j] !== '>') {
@@ -236,7 +266,10 @@ class HTMLNode implements HTMLNodeInterface {
                 attrName += input[j];
                 j++;
               }
-              tokens.push({ type: TokenType.ATTRIBUTE_NAME, value: attrName.trim().toLowerCase() });
+
+              if (attrName !== '') {
+                tokens.push({type: TokenType.ATTRIBUTE_NAME, value: attrName.trim().toLowerCase()});
+              }
 
               if (input[j] === '=') {
                 j++;
@@ -250,12 +283,14 @@ class HTMLNode implements HTMLNodeInterface {
                 tokens.push({ type: TokenType.ATTRIBUTE_VALUE, value: attrValue });
                 j++;
               }
-            } else if (input[j] === '/') {
-              tokens.push({ type: TokenType.TAG_CLOSE, value: '' });
-              j++;
-            } else {
+            }
+            else {
               j++;
             }
+          }
+
+          if (selfClosingTags.has(tagName.toLowerCase()) && input[j] === '>') {
+            tokens.push({ type: TokenType.SELF_CLOSING_TAG, value: tagName });
           }
 
           if (input[j] === '>') {
@@ -277,5 +312,3 @@ class HTMLNode implements HTMLNodeInterface {
 }
 
 export default HTMLNode;
-
-

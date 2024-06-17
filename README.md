@@ -30,8 +30,6 @@ const nodes = HTMLNode.create(html);
 console.log(nodes);
 ```
 
-Currently, the dom parser mini only handles self closing tags.
-
 ```javascript
 const html = `<div><img src="image.jpg" /></div>`;
 const nodes = HTMLNode.create(html);

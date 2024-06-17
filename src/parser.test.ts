@@ -41,6 +41,24 @@ describe('HTMLNode', () => {
     expect(nodes[0].children).toHaveLength(1);
     expect(nodes[0].children[0].tagName).toBe('img');
     expect(nodes[0].children[0].attributes['src']).toBe('image.jpg');
+
+    expect(nodes[0].html()).toBe('<div><img src="image.jpg" /></div>')
+
+  });
+
+  test('Self-Closing Tags, new', () => {
+    const html = `<div><img src="image.jpg" /></div>`;
+    const nodes = HTMLNode.create(html);
+
+    expect(nodes).toHaveLength(1);
+
+    expect(nodes[0].tagName).toBe('div');
+    expect(nodes[0].children).toHaveLength(1);
+    expect(nodes[0].children[0].tagName).toBe('img');
+    expect(nodes[0].children[0].attributes['src']).toBe('image.jpg');
+
+    expect(nodes[0].html()).toBe('<div><img src="image.jpg" /></div>')
+
   });
 
   test('Attributes Without Values', () => {
