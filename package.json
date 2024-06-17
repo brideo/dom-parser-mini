@@ -1,0 +1,31 @@
+{
+  "name": "dom-parser-mini",
+  "version": "1.0.0",
+  "description": "A lightweight library for parsing HTML elements.",
+  "main": "dist/parser.min.js",
+  "types": "dist/parser.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brideo/dom-parser-mini.git"
+  },
+  "scripts": {
+    "build": "tsc && terser dist/parser.js --compress --mangle --output dist/parser.min.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "xss",
+    "sanitize",
+    "html",
+    "security"
+  ],
+  "author": "Nathan McBride",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "jest": "^29.7.0",
+    "terser": "^5.31.1",
+    "ts-jest": "^29.1.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
