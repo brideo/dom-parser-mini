@@ -123,21 +123,12 @@ class HTMLNode implements HTMLNodeInterface {
   }
 
   hidden(): void {
-    if (this.isRemoved) {
-      return;
-    }
-
-    this.attributes['style'] = `${this.attributes['style'] || ''}; display: none;`;
+    this.attributes['style'] = `display: none;`;
   }
 
   show(): void {
-    if (this.isRemoved) {
-      return;
-    }
-
     if (this.attributes['style']) {
-      this.attributes['style'] = this.attributes['style'].replace(/display:\s*none;?/, '').trim();
-      if (!this.attributes['style']) delete this.attributes['style'];
+      delete this.attributes['style'];
     }
   }
 

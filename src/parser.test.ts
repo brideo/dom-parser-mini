@@ -175,4 +175,71 @@ describe('HTMLNode', () => {
     expect(rootNode.attributes['class']).toBe('container');
     expect(rootNode.attributes['onclick']).toBe(undefined);
   });
+
+  test('Test removing an element', () => {
+    const html = `<div class="container"><h1 id="title" class="title"><span class="abc">Title</span></h1><p class="text important">Paragraph</p></div>`;
+    const nodes = HTMLNode.create(html);
+
+    expect(nodes).toHaveLength(1);
+
+    const rootNode = nodes[0];
+
+    const title = rootNode.getElementById('title');
+
+    expect(title?.attributes['id']).toBe('title');
+
+    title?.remove();
+
+    const title2 = rootNode.getElementById('title');
+
+    expect(title2).toBeNull();
+    expect(title?.getElementsByClass('abc')).toHaveLength(0);
+
+    expect(rootNode.html()).toBe('<div class="container"><p class="text important">Paragraph</p></div>');
+
+    title?.unRemove();
+
+    expect(rootNode.html()).toBe(html);
+  });
+
+  test('Test get element by class', () => {
+    const html = `<div class="container"><h1 id="title" class="title"><span class="abc">Title</span></h1><p class="text important">Paragraph</p></div>`;
+    const nodes = HTMLNode.create(html);
+
+    expect(nodes).toHaveLength(1);
+
+    const rootNode = nodes[0];
+
+    const spans = rootNode.getElementsByClass('abc');
+
+    expect(spans).toHaveLength(1);
+  });
+
+  test('Test display none', () => {
+    const html = `<div class="container"><h1 id="title" class="title"><span class="abc">Title</span></h1><p class="text important">Paragraph</p></div>`;
+    const nodes = HTMLNode.create(html);
+
+    expect(nodes).toHaveLength(1);
+
+    const rootNode = nodes[0];
+
+    rootNode.hidden();
+
+    expect(rootNode.html()).toBe('<div class="container" style="display: none;"><h1 id="title" class="title"><span class="abc">Title</span></h1><p class="text important">Paragraph</p></div>');
+
+    rootNode.show();
+
+    expect(rootNode.html()).toBe(html);
+  });
+
+  test('Allow all attributes', () => {
+    const html = `<div random="yes" onclick="someHorribleFunction" class="container"><h1 id="title" class="title"><span class="abc">Title</span></h1><p class="text important">Paragraph</p></div>`;
+    const nodes = HTMLNode.create(html);
+
+    const rootNode = nodes[0];
+
+    rootNode.filterAttributes(['*']);
+
+    expect(rootNode.html()).toBe(html);
+  });
 });
